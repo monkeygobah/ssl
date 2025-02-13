@@ -1,0 +1,12 @@
+/data/
+/models/
+/ssl_code_for_baselines/pseudolabel/pl_data/
+/ssl_code_for_baselines/pseudolabel/pseudolabeled_masks_08/
+/ssl_code_for_baselines/pseudolabel/models/
+/ssl_code_for_baselines/mean_teacher/wandb/
+/ssl_code_for_baselines/mean_teacher/__pycache__/
+/ssl_code_for_baselines/pseudolabel/__pycache__/
+/baselines/
+/__pycache__/
+/ssl_code_for_baselines/mean_teacher/final_model_ema.pth
+/ssl_code_for_baselines/mean_teacher/final_model.pth

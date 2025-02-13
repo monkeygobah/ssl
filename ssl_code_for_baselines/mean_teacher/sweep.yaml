@@ -1,0 +1,31 @@
+method: bayes
+metric:
+  goal: maximize
+  name: student_dice
+parameters:
+  consistency_weight:
+    distribution: int_uniform
+    max: 36
+    min: 6
+  learning_rate:
+    distribution: uniform
+    max: 0.01
+    min: 1e-05
+  cons_thresh:
+    distribution: int_uniform
+    max: 5
+    min: 2
+  alpha:
+    distribution: uniform
+    max: 0.999
+    min: 0.8
+
+early_terminate:
+  type: hyperband
+  min_iter: 7  
+  max_iter: 13  
+  eta: 2  
+  strict: False 
+
+run_cap: 100
+program: /home/georgie/ssl/ssl_code_for_baselines/mean_teacher/main.py

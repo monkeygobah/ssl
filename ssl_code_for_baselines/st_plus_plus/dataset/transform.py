@@ -1,4 +1,6 @@
 import numpy as np
+print(np.__version__)
+
 from PIL import Image, ImageOps, ImageFilter
 import random
 import torch
@@ -30,20 +32,31 @@ def hflip(img, mask, p=0.5):
     return img, mask
 
 
+
+
 def normalize(img, mask=None):
     """
-    :param img: PIL image
-    :param mask: PIL image, corresponding mask
-    :return: normalized torch tensor of image and mask
+    Normalize image and convert both image and mask to PyTorch tensors.
     """
-    img = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-    ])(img)
+    # Ensure `img` is a Tensor
+    if isinstance(img, Image.Image):
+        img = transforms.ToTensor()(img)
+        img = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(img)
+    elif not isinstance(img, torch.Tensor):
+        raise TypeError(f"Unexpected img type: {type(img)}")
+
+    # Ensure `mask` is a Tensor
     if mask is not None:
-        mask = torch.from_numpy(np.array(mask)).long()
+        if isinstance(mask, Image.Image):  # Convert PIL image to NumPy and then Tensor
+            mask = torch.tensor(np.array(mask), dtype=torch.long)
+        elif not isinstance(mask, torch.Tensor):  # Ensure it's a tensor
+            raise TypeError(f"Unexpected mask type: {type(mask)}")
+
         return img, mask
+
     return img
+
+
 
 
 def resize(img, mask, base_size, ratio_range):

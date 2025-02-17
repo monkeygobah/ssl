@@ -14,7 +14,7 @@ from torch.optim import SGD
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from utils import select_reliable,init_basic_elems
-from trainer import train, label
+from trainer import train, label,load_pretrained_models
 from parameters import parse_args
 MODE = None
 
@@ -56,7 +56,14 @@ def main(args):
     # if not pretrained_model_path:
 
     # best_model, checkpoints = train(model, trainloader, valloader, criterion, optimizer, args)
-    best_model, checkpoints = train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC)
+
+    if not args.load_pretrained:
+        best_model, checkpoints = train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC, mode = MODE)
+    else:
+        best_model, checkpoints = load_pretrained_models(args, model, optimizer)
+
+
+
 
     """
         ST framework without selective re-training
@@ -66,22 +73,21 @@ def main(args):
         print('\n\n\n================> Total stage 2/3: Pseudo labeling all unlabeled images')
 
         dataset = SemiDataset('label', None, None, args.unlabeled_id_path)
-        dataloader = DataLoader(dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=4, drop_last=False)
-
-        label(best_model, dataloader, args, save_best_by=SAVE_METRIC)
-
+        dataloader = DataLoader(dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=NUM_WORKERS, drop_last=False)
+        if args.masks_not_saved:
+            label(best_model, dataloader, args, save_best_by=SAVE_METRIC)
+        
         # <======================== Re-training on labeled and unlabeled images ========================>
         print('\n\n\n================> Total stage 3/3: Re-training on labeled and unlabeled images')
 
         MODE = 'semi_train'
 
         trainset = SemiDataset(MODE, args.crop_size, args.labeled_id_path, args.unlabeled_id_path, args.pseudo_mask_path)
-        trainloader = DataLoader(trainset, batch_size=args.batch_size, shuffle=True,
-                                 pin_memory=True, num_workers=16, drop_last=True)
+        trainloader = DataLoader(trainset, batch_size=args.batch_size, shuffle=True,pin_memory=True, num_workers=NUM_WORKERS, drop_last=False)
 
         model, optimizer = init_basic_elems(args)
 
-        train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC)
+        train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC,mode = MODE)
 
         return
 
@@ -115,7 +121,7 @@ def main(args):
 
     model, optimizer = init_basic_elems(args)
 
-    best_model = train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC)
+    best_model = train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC,mode = MODE)
 
     # <=============================== Pseudo label unreliable images ================================>
     print('\n\n\n================> Total stage 5/6: Pseudo labeling unreliable images')
@@ -136,7 +142,7 @@ def main(args):
 
     model, optimizer = init_basic_elems(args)
 
-    train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC)
+    train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC,mode = MODE)
 
 
 

@@ -6,7 +6,7 @@ from PIL import Image
 import random
 from torch.utils.data import Dataset
 from torchvision import transforms
-
+import numpy as np
 
 class SemiDataset(Dataset):
     def __init__(self,mode, size, labeled_id_path=None, unlabeled_id_path=None, pseudo_mask_path=None):
@@ -52,11 +52,17 @@ class SemiDataset(Dataset):
         id = self.ids[item]
         img = Image.open(id.split(' ')[0])
 
-        if self.mode == 'val' or self.mode == 'label':
+        if self.mode == 'val':
             mask = Image.open(id.split(' ')[1])
             img, mask = normalize(img, mask)
             return img, mask, id
+        elif self.mode == 'label':
+            if len(id.split(' ')) > 1:
+                raise ValueError(f"Error: Expected only image path in 'label' mode, but got {id}")
 
+            img = normalize(img)
+            return img, id
+        
         if self.mode == 'train' or (self.mode == 'semi_train' and id in self.labeled_ids):
             mask = Image.open(id.split(' ')[1])
         else:

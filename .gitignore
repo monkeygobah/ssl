@@ -10,3 +10,5 @@
 /__pycache__/
 /ssl_code_for_baselines/mean_teacher/final_model_ema.pth
 /ssl_code_for_baselines/mean_teacher/final_model.pth
+/ssl_code_for_baselines/st_plus_plus/st_plus_testing/
+/ssl_code_for_baselines/st_plus_plus/pseudomasks/

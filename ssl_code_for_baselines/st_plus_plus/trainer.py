@@ -11,7 +11,7 @@ from utils import *
 
 
 def train(model, trainloader, valloader, criterion, optimizer, args, save_best_by="mIoU", mode= 'train'):
-    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     print(f"Training on: {DEVICE}")
 
     iters = 0
@@ -151,14 +151,14 @@ def label(model, dataloader, args, save_best_by="mIoU"):
 
 def load_pretrained_models(args, model, optimizer):
 
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
     # Paths to the best model and checkpoints
-    best_model_pth = '/root/ssl/ssl/ssl_code_for_baselines/original_training/st_plus_plus/st_plus_testing/dlv3_resnet101_0.81.pth'
+    best_model_pth = '/root/ssl/ssl/ssl_code_for_baselines/st_plus_plus/st_plus_testing/original_training/dlv3_resnet101_0.81.pth'
     checkpoint_paths = [
-        '/root/ssl/ssl/ssl_code_for_baselines/st_plus_plus/original_training/st_plus_testing/checkpoint_epoch_6.pth',
-        '/root/ssl/ssl/ssl_code_for_baselines/st_plus_plus/original_training/st_plus_testing/checkpoint_epoch_13.pth',
-        '/root/ssl/ssl/ssl_code_for_baselines/st_plus_plus/original_training/st_plus_testing/checkpoint_epoch_20.pth'
+        '/root/ssl/ssl/ssl_code_for_baselines/st_plus_plus/st_plus_testing/original_training/checkpoint_epoch_6.pth',
+        '/root/ssl/ssl/ssl_code_for_baselines/st_plus_plus/st_plus_testing/original_training/checkpoint_epoch_13.pth',
+        '/root/ssl/ssl/ssl_code_for_baselines/st_plus_plus/st_plus_testing/original_training/checkpoint_epoch_20.pth'
     ]
 
     # Load best model

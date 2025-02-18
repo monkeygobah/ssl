@@ -75,7 +75,7 @@ def color_map():
 
 
 def init_basic_elems(args, pretrained_path=None):
-    DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    DEVICE = torch.device("cuda:1") if torch.cuda.is_available() else torch.device("cpu")
     print(f'Selected device: {DEVICE}')
 
     # Load DeepLabV3 with ResNet101 backbone and pretrained weights
@@ -136,7 +136,7 @@ import os
 from tqdm import tqdm
 
 def select_reliable(models, dataloader, args, reliability_metric="mIoU"):
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     for i in range(len(models)):
         models[i].to(DEVICE).eval()
 
@@ -147,8 +147,8 @@ def select_reliable(models, dataloader, args, reliability_metric="mIoU"):
     id_to_reliability = []
 
     with torch.no_grad():
-        for img, mask, id in tbar:
-            img, mask = img.to(DEVICE), mask.to(DEVICE)
+        for img, id in tbar:
+            img = img.to(DEVICE)
 
             preds = []
             for model in models:

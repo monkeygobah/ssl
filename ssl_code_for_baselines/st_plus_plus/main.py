@@ -28,6 +28,7 @@ def main(args):
     if not os.path.exists(args.pseudo_mask_path):
         os.makedirs(args.pseudo_mask_path)
     if args.plus and args.reliable_id_path is None:
+
         exit('Please specify reliable-id-path in ST++.')
 
     criterion = CrossEntropyLoss(ignore_index=255)
@@ -61,9 +62,7 @@ def main(args):
         best_model, checkpoints = train(model, trainloader, valloader, criterion, optimizer, args, save_best_by=SAVE_METRIC, mode = MODE)
     else:
         best_model, checkpoints = load_pretrained_models(args, model, optimizer)
-
-
-
+    
 
     """
         ST framework without selective re-training
@@ -95,21 +94,21 @@ def main(args):
         ST++ framework with selective re-training
     """
     # <===================================== Select Reliable IDs =====================================>
-    print('\n\n\n================> Total stage 2/6: Select reliable images for the 1st stage re-training')
+    # print('\n\n\n================> Total stage 2/6: Select reliable images for the 1st stage re-training')
 
-    dataset = SemiDataset('label', None, None, args.unlabeled_id_path)
-    dataloader = DataLoader(dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=NUM_WORKERS, drop_last=False)
+    # dataset = SemiDataset('label', None, None, args.unlabeled_id_path)
+    # dataloader = DataLoader(dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=NUM_WORKERS, drop_last=False)
 
-    select_reliable(checkpoints, dataloader, args, reliability_metric=SAVE_METRIC)
+    # select_reliable(checkpoints, dataloader, args, reliability_metric=SAVE_METRIC)
 
-    # <================================ Pseudo label reliable images =================================>
-    print('\n\n\n================> Total stage 3/6: Pseudo labeling reliable images')
+    # # <================================ Pseudo label reliable images =================================>
+    # print('\n\n\n================> Total stage 3/6: Pseudo labeling reliable images')
 
     cur_unlabeled_id_path = os.path.join(args.reliable_id_path, 'reliable_ids.txt')
-    dataset = SemiDataset( 'label', None, None, cur_unlabeled_id_path)
-    dataloader = DataLoader(dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=NUM_WORKERS, drop_last=False)
+    # dataset = SemiDataset( 'label', None, None, cur_unlabeled_id_path)
+    # dataloader = DataLoader(dataset, batch_size=1, shuffle=False, pin_memory=True, num_workers=NUM_WORKERS, drop_last=False)
 
-    label(best_model, dataloader, args,save_best_by=SAVE_METRIC)
+    # label(best_model, dataloader, args, save_best_by=SAVE_METRIC)
 
     # <================================== The 1st stage re-training ==================================>
     print('\n\n\n================> Total stage 4/6: The 1st stage re-training on labeled and reliable unlabeled images')
